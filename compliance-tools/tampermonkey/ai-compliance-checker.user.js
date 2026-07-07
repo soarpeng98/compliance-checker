@@ -220,7 +220,7 @@ function showPanel(results){
     if(industries.length===0) industries.push("general");
     const results = scanText(text, industries);
     recordScan();
-    showResultsInPanel(results, false);
+    window._ccResults = results; window._ccText = text; showResultsInPanel(results, false);
     // 更新剩余次数
     panel.querySelector(".cc-panel-header-right span").textContent = "今日剩余："+remaining()+"次";
   };
@@ -235,6 +235,9 @@ function showPanel(results){
 function showResultsInPanel(results, isLimit){
   const div = document.getElementById("cc-results");
   if(!div) return;
+  if(results && results.length>0){
+    div.innerHTML += `<div style="padding:12px 16px;display:flex;gap:8px"><button onclick="ccApplyFix()" style="flex:1;padding:10px;border:none;border-radius:8px;background:linear-gradient(135deg,#059669,#10b981);color:#fff;font-size:13px;font-weight:600;cursor:pointer">🔧 一键替换全部违禁词</button></div><div id="cc-fixed-area" style="display:none;padding:0 16px 12px"><textarea id="cc-fixed-output" readonly style="width:100%;height:100px;padding:10px;border-radius:8px;background:#0d2818;border:1px solid #10b981;color:#d1fae5;font-size:12px;font-family:inherit;resize:vertical;box-sizing:border-box"></textarea><button id="cc-copy-btn" onclick="ccCopyFixed()" style="margin-top:6px;width:100%;padding:8px;border:none;border-radius:6px;background:#1e293b;color:#e2e8f0;font-size:12px;cursor:pointer">📋 复制修正文案</button></div>`;
+  }
   if(isLimit){
     div.innerHTML = `<div class="cc-empty">🔒 今日免费次数已用完<br><small>分享给朋友，解锁更多次数（即将推出）</small></div>`;
     return;
@@ -335,6 +338,26 @@ if(typeof GM_registerMenuCommand === "function"){
 
 // ========== 初始化 ==========
 createFloatingBtn();
+function ccApplyFix(){
+  const results = window._ccResults;
+  let text = window._ccText;
+  if(!results||!text) return;
+  const sorted = [...results].sort((a,b)=>b.word.length - a.word.length);
+  for(const r of sorted){
+    const repl = r.suggest && r.suggest !== "删除" ? r.suggest.split("/")[0].trim() : "";
+    text = text.replace(new RegExp(r.word.replace(/[.*+?^${}()|[\]\\]/g,"\\console.log("🛡️ AI内容合规检测"),"g"), repl);
+  }
+  text = text.replace(/\s+/g," ").trim();
+  document.getElementById("cc-fixed-output").value = text;
+  document.getElementById("cc-fixed-area").style.display = "block";
+}
+function ccCopyFixed(){
+  const ta = document.getElementById("cc-fixed-output");
+  ta.select(); document.execCommand("copy");
+  const btn = document.getElementById("cc-copy-btn");
+  btn.textContent = "✅ 已复制！";
+  setTimeout(()=>btn.textContent="📋 复制修正文案",2000);
+}
 console.log("🛡️ AI内容合规检测 已就绪 | 按 Ctrl+Shift+C 打开面板 | 今日剩余："+remaining()+"次");
 
 })();

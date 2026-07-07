@@ -185,8 +185,21 @@ function doScan(){
 
   const errors = results.filter(x=>x.s==="error"), warnings = results.filter(x=>x.s==="warning");
   status.textContent = "检测完成 · "+results.length+"处问题";
+  window._lastResults = results;
+  window._lastText = text;
 
-  if(results.length===0){ resDiv.innerHTML='<div class="empty">🎉 未发现合规问题，内容安全！</div>'; return; }
+  </div>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        <button class="btn-fix" onclick="applyFix()" style="flex:1;padding:12px;border:none;border-radius:10px;background:linear-gradient(135deg,#059669,#10b981);color:#fff;font-size:14px;font-weight:600;cursor:pointer">🔧 一键替换全部违禁词</button>
+      </div>
+      <div id="fixed-text-area" style="display:none;margin-top:12px">
+        <textarea id="fixed-output" readonly style="width:100%;height:120px;padding:12px;border-radius:10px;background:#0d2818;border:1px solid #10b981;color:#d1fae5;font-size:13px;font-family:inherit;resize:vertical;line-height:1.8"></textarea>
+        <button class="btn-fix" onclick="copyFixed()" style="margin-top:8px;width:100%;padding:10px;border:none;border-radius:8px;background:#1e293b;color:#e2e8f0;font-size:13px;cursor:pointer">📋 复制修正文案</button>
+      </div>
+    </div>
+  `;
+}
+if(results.length===0){ resDiv.innerHTML='<div class="empty">🎉 未发现合规问题，内容安全！</div>'; return; }
 
   const grouped={}; for(const r of results){ const k=r.iname; if(!grouped[k]) grouped[k]=[]; grouped[k].push(r); }
 
@@ -214,6 +227,25 @@ function doScan(){
 }
 
 // 快捷键 Ctrl+Enter
+function applyFix(){
+  const results = window._lastResults;
+  let text = window._lastText;
+  if(!results||!text) return;
+  const sorted = [...results].sort((a,b)=>b.w.length - a.w.length);
+  for(const r of sorted){
+    const replacement = r.g && r.g !== "删除" ? r.g.split("/")[0].trim() : "";
+    text = text.replace(new RegExp(r.w.replace(/[.*+?^${}()|[\]\\]/g,"\\document.getElementById("input").addEventListener"),"g"), replacement);
+  }
+  text = text.replace(/\s+/g," ").trim();
+  document.getElementById("fixed-output").value = text;
+  document.getElementById("fixed-text-area").style.display = "block";
+}
+function copyFixed(){
+  const ta = document.getElementById("fixed-output");
+  ta.select(); document.execCommand("copy");
+  const btn = event.target; btn.textContent="✅ 已复制！";
+  setTimeout(()=>btn.textContent="📋 复制修正文案",2000);
+}
 document.getElementById("input").addEventListener("keydown",e=>{ if(e.ctrlKey&&e.key==="Enter") doScan(); });
 </script>
 </body>
