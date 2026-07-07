@@ -142,11 +142,9 @@ let selected = ["general"];
 
 // 渲染行业标签
 const tagsDiv = document.getElementById("tags");
-var allIndustries = Object.keys(r);
 Object.entries(r).forEach(([k,v])=>{
-  var el = document.createElement("span");
+  const el = document.createElement("span");
   el.className = "tag" + (k==="general"?" on":"");
-  el.setAttribute("data-industry", k);
   el.textContent = v.i+" "+v.n;
   el.onclick = function(){
     el.classList.toggle("on");
@@ -256,3 +254,4 @@ document.getElementById("input").addEventListener("keydown",e=>{ if(e.ctrlKey&&e
 </script>
 </body>
 </html>
+
