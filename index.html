@@ -142,14 +142,19 @@ let selected = ["general"];
 
 // 渲染行业标签
 const tagsDiv = document.getElementById("tags");
+var allIndustries = Object.keys(r);
 Object.entries(r).forEach(([k,v])=>{
-  const el = document.createElement("span");
+  var el = document.createElement("span");
   el.className = "tag" + (k==="general"?" on":"");
+  el.setAttribute("data-industry", k);
   el.textContent = v.i+" "+v.n;
-  el.onclick = ()=>{
+  el.onclick = function(){
     el.classList.toggle("on");
-    selected = [...document.querySelectorAll(".tag.on")].map((t,i)=>Object.keys(r)[i]).filter(Boolean);
-    // fallback
+    selected = [];
+    document.querySelectorAll("#tags .tag.on").forEach(function(t){
+      var ik = t.getAttribute("data-industry");
+      if(ik) selected.push(ik);
+    });
     if(selected.length===0){ selected=["general"]; el.classList.add("on"); }
   };
   tagsDiv.appendChild(el);
@@ -166,9 +171,10 @@ function doScan(){
   const tags = [...document.querySelectorAll(".tag.on")];
   const industries = tags.length ? Object.keys(r).filter((k,i)=>tags.some(t=>t.textContent.includes(r[k].n))).length ? Object.keys(r).filter((k,i)=>tags.some(t=>t.textContent.includes(r[k].n))) : ["general"] : ["general"];
   // simpler approach
-  const inds = [];
-  document.querySelectorAll(".tag.on").forEach(t=>{
-    for(const [k,v] of Object.entries(r)){ if(t.textContent.includes(v.n)) inds.push(k); }
+  var inds = [];
+  document.querySelectorAll("#tags .tag.on").forEach(function(t){
+    var ik = t.getAttribute("data-industry");
+    if(ik) inds.push(ik);
   });
   if(inds.length===0) inds.push("general");
 
