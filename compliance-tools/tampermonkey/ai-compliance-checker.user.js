@@ -2,7 +2,7 @@
 // @name         AI内容合规检测 - 违禁词扫描器
 // @name:zh-CN   AI内容合规检测 - 违禁词扫描器
 // @namespace    https://github.com/xianyu-fanshen/compliance-checker
-// @version      1.0.0
+// @version      1.1.0
 // @description  一键检测网页文案中的广告违禁词，覆盖广告法、美妆、食品、医疗、金融、教育、直播7大行业，120+规则，Ctrl+Shift+C呼出面板
 // @description:zh-CN  一键检测网页文案中的广告违禁词，覆盖广告法、美妆、食品、医疗、金融、教育、直播7大行业，120+规则，Ctrl+Shift+C呼出面板
 // @author       咸鱼翻身
