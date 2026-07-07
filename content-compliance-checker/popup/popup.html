@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AI内容合规检测</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 头部 -->
+    <header>
+      <span class="logo">🛡️ AI内容合规检测</span>
+      <span id="plan-badge" class="plan-badge free">免费版</span>
+    </header>
+
+    <!-- 状态栏 -->
+    <div id="status-bar">
+      <span id="scan-count">今日剩余：3/3 次</span>
+    </div>
+
+    <!-- 行业选择 -->
+    <section class="section">
+      <h3>选择检测行业</h3>
+      <div id="industry-tags">
+        <label class="tag selected"><input type="checkbox" value="general" checked> ⚖️ 通用广告法</label>
+        <label class="tag"><input type="checkbox" value="ecommerce"> 🛒 电商</label>
+        <label class="tag"><input type="checkbox" value="beauty"> 💄 美妆</label>
+        <label class="tag"><input type="checkbox" value="food"> 🍎 食品</label>
+        <label class="tag"><input type="checkbox" value="medical"> 🏥 医疗</label>
+        <label class="tag"><input type="checkbox" value="finance"> 💰 金融</label>
+        <label class="tag"><input type="checkbox" value="education"> 📚 教育</label>
+        <label class="tag"><input type="checkbox" value="livestream"> 📱 直播</label>
+      </div>
+    </section>
+
+    <!-- 输入区域 -->
+    <section class="section">
+      <textarea id="text-input" placeholder="在此粘贴要检测的文案...&#10;&#10;💡 提示：在网页上选中文本后右键，也可以直接检测哦"></textarea>
+      <button id="scan-btn">🔍 开始检测</button>
+    </section>
+
+    <!-- 结果区域 -->
+    <div id="results-container" style="display:none">
+      <div id="results-summary"></div>
+      <div id="results-list"></div>
+    </div>
+
+    <!-- 升级横幅 -->
+    <div id="upgrade-banner" class="upgrade-banner">
+      <div class="upgrade-text">
+        <strong>🚀 升级 Pro 版</strong>
+        <span>¥9.9/月 · 无限次检测 · 全部行业 · AI深度分析</span>
+      </div>
+      <button id="upgrade-btn">立即升级</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

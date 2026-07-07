@@ -1,0 +1,220 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI内容合规检测 - 在线版</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#0a0e1a;color:#e2e8f0;min-height:100vh}
+.container{max-width:800px;margin:0 auto;padding:20px}
+header{text-align:center;padding:40px 0 30px}
+header h1{font-size:28px;background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+header p{color:#64748b;font-size:14px}
+.card{background:#111827;border:1px solid #1e293b;border-radius:16px;padding:24px;margin-bottom:16px}
+.card h3{font-size:14px;color:#64748b;margin-bottom:12px;font-weight:500}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;background:#1e293b;border:1px solid #334155;color:#94a3b8;user-select:none;transition:all .15s}
+.tag.on{background:#1e3a5f;border-color:#3b82f6;color:#93c5fd}
+textarea{width:100%;height:180px;padding:14px;border-radius:12px;background:#1e293b;border:1px solid #334155;color:#e2e8f0;font-size:14px;font-family:inherit;resize:vertical;line-height:1.8}
+textarea:focus{outline:none;border-color:#3b82f6}
+textarea::placeholder{color:#475569}
+.btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;margin-top:12px;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(99,102,241,.4)}
+.status{text-align:center;padding:12px;font-size:13px;color:#64748b}
+.result-item{padding:12px 0;border-bottom:1px solid #1e293b;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.result-item.error{border-left:3px solid #ef4444;padding-left:13px}
+.result-item.warning{border-left:3px solid #f59e0b;padding-left:13px}
+.result-word{font-weight:700;font-family:monospace;font-size:14px}
+.result-desc{width:100%;font-size:12px;color:#94a3b8}
+.result-suggest{width:100%;font-size:12px;color:#6ee7b7}
+.summary{display:flex;gap:8px;padding:12px 0}
+.badge{padding:4px 12px;border-radius:6px;font-size:12px;font-weight:500}
+.badge-err{background:#7f1d1d;color:#fca5a5}
+.badge-warn{background:#78350f;color:#fde68a}
+.badge-ok{background:#064e3b;color:#6ee7b7}
+.empty{text-align:center;padding:40px;color:#475569;font-size:15px}
+footer{text-align:center;padding:40px;color:#334155;font-size:12px}
+footer a{color:#475569}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🛡️ AI内容合规检测</h1>
+    <p>在线版 · 粘贴文案即检测 · 无需安装</p>
+  </header>
+
+  <div class="card">
+    <h3>选择检测行业</h3>
+    <div class="tags" id="tags"></div>
+  </div>
+
+  <div class="card">
+    <textarea id="input" placeholder="在此粘贴要检测的文案...&#10;&#10;支持：公众号文章、小红书文案、产品详情页、直播话术、广告语..."></textarea>
+    <button class="btn btn-primary" onclick="doScan()">🔍 开始检测</button>
+  </div>
+
+  <div class="status" id="status"></div>
+  <div id="results"></div>
+</div>
+
+<footer>
+  <p>规则持续更新中 · 如有遗漏欢迎反馈</p>
+  <p style="margin-top:4px">📱 推荐安装 <a href="#">油猴脚本版</a>，网页右键即用 | <a href="#">Edge扩展版</a></p>
+</footer>
+
+<script>
+// ========== 规则库（精简内嵌版） ==========
+const r={general:{n:"通用广告法",i:"⚖️",w:[
+  {w:"最好",s:"error",g:"优质 / 出色",d:"广告法禁止绝对化用语"},
+  {w:"最佳",s:"error",g:"优秀 / 出众",d:"广告法禁止绝对化用语"},
+  {w:"第一",s:"error",g:"领先",d:"广告法禁止绝对化用语"},
+  {w:"唯一",s:"error",g:"独特",d:"广告法禁止绝对化用语"},
+  {w:"顶级",s:"error",g:"高端",d:"广告法禁止绝对化用语"},
+  {w:"最高",s:"error",g:"较高",d:"广告法禁止绝对化用语"},
+  {w:"最低",s:"error",g:"实惠",d:"广告法禁止绝对化用语"},
+  {w:"绝对",s:"error",g:"非常",d:"广告法禁止绝对化用语"},
+  {w:"百分百",s:"error",g:"高比例",d:"广告法禁止绝对化用语"},
+  {w:"全网第一",s:"error",g:"深受欢迎",d:"广告法禁止绝对化用语"},
+  {w:"销量第一",s:"error",g:"销量领先",d:"广告法禁止绝对化用语"},
+  {w:"独一无二",s:"error",g:"独具特色",d:"广告法禁止绝对化用语"},
+  {w:"国家级",s:"error",g:"优质",d:"非官方认证不得使用"},
+  {w:"包治百病",s:"error",g:"删除",d:"严重违规"},
+  {w:"立竿见影",s:"error",g:"效果明显",d:"夸大宣传"},
+]},beauty:{n:"美妆护肤",i:"💄",w:[
+  {w:"消炎",s:"error",g:"舒缓",d:"化妆品不得宣称医疗效果"},
+  {w:"抗敏",s:"error",g:"温和",d:"化妆品不得宣称医疗效果"},
+  {w:"修复",s:"error",g:"修护",d:"慎用医疗术语"},
+  {w:"再生",s:"error",g:"焕活",d:"不得宣称医疗效果"},
+  {w:"治愈",s:"error",g:"改善",d:"不得宣称医疗效果"},
+  {w:"治疗",s:"error",g:"改善",d:"不得宣称医疗效果"},
+  {w:"排毒",s:"error",g:"净化",d:"不得宣称医疗效果"},
+  {w:"祛斑",s:"error",g:"淡斑 / 匀净",d:"特殊用途需备案"},
+  {w:"祛痘",s:"error",g:"控油",d:"特殊用途需备案"},
+  {w:"医美级",s:"error",g:"院线品质",d:"不得宣称医疗级别"},
+  {w:"药妆",s:"error",g:"功效护肤",d:"中国禁止药妆宣称"},
+  {w:"干细胞",s:"error",g:"删除",d:"化妆品禁用干细胞宣称"},
+  {w:"刷酸",s:"error",g:"焕肤",d:"平台禁用词"},
+]},food:{n:"食品保健",i:"🍎",w:[
+  {w:"治疗",s:"error",g:"删除",d:"食品不得宣称治疗功效"},
+  {w:"抗癌",s:"error",g:"删除",d:"严重违规"},
+  {w:"降血糖",s:"error",g:"删除",d:"食品不得宣称医疗功效"},
+  {w:"减肥",s:"error",g:"体重管理",d:"食品不得宣称减肥功效"},
+  {w:"燃脂",s:"error",g:"删除",d:"食品不得宣称燃脂"},
+  {w:"瘦身",s:"error",g:"体态管理",d:"食品不得宣称瘦身"},
+  {w:"壮阳",s:"error",g:"删除",d:"严重违规"},
+  {w:"抗衰老",s:"error",g:"保持年轻态",d:"食品不得宣称抗衰老"},
+]},medical:{n:"医疗健康",i:"🏥",w:[
+  {w:"根治",s:"error",g:"有效治疗",d:"禁止保证根治"},
+  {w:"无副作用",s:"error",g:"副作用小",d:"不可能无副作用"},
+  {w:"包治",s:"error",g:"删除",d:"禁止保证疗效"},
+  {w:"祖传秘方",s:"error",g:"删除",d:"禁止以祖传名义宣传"},
+  {w:"神医",s:"error",g:"删除",d:"禁止神化医生"},
+  {w:"治愈率",s:"error",g:"删除",d:"禁止提治愈率"},
+]},finance:{n:"金融理财",i:"💰",w:[
+  {w:"保本",s:"error",g:"删除",d:"理财产品不得承诺保本"},
+  {w:"无风险",s:"error",g:"低风险",d:"投资不存在无风险"},
+  {w:"稳赚不赔",s:"error",g:"删除",d:"严重违规"},
+  {w:"躺着赚钱",s:"error",g:"轻松理财",d:"误导性宣传"},
+  {w:"一夜暴富",s:"error",g:"删除",d:"严重违规"},
+  {w:"内幕消息",s:"error",g:"删除",d:"违法"},
+]},education:{n:"教育培训",i:"📚",w:[
+  {w:"保过",s:"error",g:"高通过率",d:"不得承诺考试结果"},
+  {w:"包拿证",s:"error",g:"助你取证",d:"不得承诺证书获取"},
+  {w:"提分百分百",s:"error",g:"显著提分",d:"不得承诺提分"},
+  {w:"命题组",s:"error",g:"删除",d:"不得借命题组名义宣传"},
+  {w:"零基础包会",s:"error",g:"零基础可学",d:"不得承诺学习结果"},
+]},ecommerce:{n:"电商通用",i:"🛒",w:[
+  {w:"高仿",s:"error",g:"删除",d:"侵权"},
+  {w:"A货",s:"error",g:"删除",d:"侵权"},
+  {w:"跳楼价",s:"error",g:"优惠价",d:"平台禁用词"},
+  {w:"原单",s:"error",g:"品质优选",d:"平台禁用词"},
+]},livestream:{n:"直播带货",i:"📱",w:[
+  {w:"全网最低",s:"error",g:"实惠价",d:"违反广告法"},
+  {w:"史低价",s:"error",g:"超值价",d:"平台禁用词"},
+  {w:"破价",s:"error",g:"惊喜价",d:"平台禁用词"},
+  {w:"绝对最低价",s:"error",g:"好价入手",d:"违反广告法"},
+]}};
+
+let selected = ["general"];
+
+// 渲染行业标签
+const tagsDiv = document.getElementById("tags");
+Object.entries(r).forEach(([k,v])=>{
+  const el = document.createElement("span");
+  el.className = "tag" + (k==="general"?" on":"");
+  el.textContent = v.i+" "+v.n;
+  el.onclick = ()=>{
+    el.classList.toggle("on");
+    selected = [...document.querySelectorAll(".tag.on")].map((t,i)=>Object.keys(r)[i]).filter(Boolean);
+    // fallback
+    if(selected.length===0){ selected=["general"]; el.classList.add("on"); }
+  };
+  tagsDiv.appendChild(el);
+});
+
+function doScan(){
+  const text = document.getElementById("input").value.trim();
+  const resDiv = document.getElementById("results");
+  const status = document.getElementById("status");
+  if(!text){ resDiv.innerHTML='<div class="empty">请输入要检测的文本</div>';status.textContent="";return; }
+
+  const results = [];
+  // 重新获取选中行业
+  const tags = [...document.querySelectorAll(".tag.on")];
+  const industries = tags.length ? Object.keys(r).filter((k,i)=>tags.some(t=>t.textContent.includes(r[k].n))).length ? Object.keys(r).filter((k,i)=>tags.some(t=>t.textContent.includes(r[k].n))) : ["general"] : ["general"];
+  // simpler approach
+  const inds = [];
+  document.querySelectorAll(".tag.on").forEach(t=>{
+    for(const [k,v] of Object.entries(r)){ if(t.textContent.includes(v.n)) inds.push(k); }
+  });
+  if(inds.length===0) inds.push("general");
+
+  for(const key of inds){
+    const rule = r[key]; if(!rule) continue;
+    for(const item of rule.w){
+      let p = text.indexOf(item.w);
+      while(p!==-1){
+        results.push({...item, ind:key, iname:rule.n, icon:rule.i});
+        p = text.indexOf(item.w, p+1);
+      }
+    }
+  }
+
+  const errors = results.filter(x=>x.s==="error"), warnings = results.filter(x=>x.s==="warning");
+  status.textContent = "检测完成 · "+results.length+"处问题";
+
+  if(results.length===0){ resDiv.innerHTML='<div class="empty">🎉 未发现合规问题，内容安全！</div>'; return; }
+
+  const grouped={}; for(const r of results){ const k=r.iname; if(!grouped[k]) grouped[k]=[]; grouped[k].push(r); }
+
+  resDiv.innerHTML = `
+    <div class="card">
+      <div class="summary">
+        <span class="badge badge-err">🔴 ${errors.length} 严重</span>
+        <span class="badge badge-warn">🟡 ${warnings.length} 警告</span>
+      </div>
+      ${Object.entries(grouped).map(([name,items])=>`
+        <div style="margin-top:8px">
+          <div style="padding:8px 0;font-weight:600;font-size:13px;color:#cbd5e1">${items[0].icon} ${name}（${items.length}处）</div>
+          ${items.map(r=>`
+            <div class="result-item ${r.s}">
+              <span class="result-word">"${r.w}"</span>
+              <span>${r.s==="error"?"🔴":"🟡"}</span>
+              <span class="result-desc">${r.d}</span>
+              ${r.g?`<span class="result-suggest">💡 建议改为：${r.g}</span>`:""}
+            </div>
+          `).join("")}
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+// 快捷键 Ctrl+Enter
+document.getElementById("input").addEventListener("keydown",e=>{ if(e.ctrlKey&&e.key==="Enter") doScan(); });
+</script>
+</body>
+</html>

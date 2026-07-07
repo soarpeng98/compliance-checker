@@ -1,0 +1,231 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI内容合规检测 - 一键扫清违禁词，创作无忧</title>
+<meta name="description" content="Chrome扩展，支持广告法、美妆、食品、医疗、金融、教育、直播7大行业违禁词检测，右键即用，免费每天3次">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"PingFang SC","Microsoft YaHei","Inter",sans-serif;background:#0a0e1a;color:#e2e8f0;line-height:1.7}
+.container{max-width:960px;margin:0 auto;padding:0 20px}
+
+/* Hero */
+.hero{padding:80px 0 60px;text-align:center}
+.hero .icon{font-size:64px;margin-bottom:20px;display:block;animation:float 3s ease-in-out infinite}
+.hero h1{font-size:42px;font-weight:800;background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:16px}
+.hero .subtitle{font-size:18px;color:#94a3b8;max-width:560px;margin:0 auto 32px}
+.cta-group{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{padding:14px 32px;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;box-shadow:0 4px 20px rgba(99,102,241,.4)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(99,102,241,.6)}
+.btn-outline{border:2px solid #334155;color:#e2e8f0;background:transparent}
+.btn-outline:hover{border-color:#6366f1;color:#a5b4fc}
+
+/* Stats */
+.stats{padding:40px 0;display:flex;justify-content:center;gap:60px;flex-wrap:wrap}
+.stat{text-align:center}
+.stat .num{font-size:36px;font-weight:800;background:linear-gradient(135deg,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat .label{font-size:14px;color:#64748b;margin-top:4px}
+
+/* Sections */
+.section{padding:60px 0}
+.section h2{font-size:30px;font-weight:700;text-align:center;margin-bottom:12px}
+.section .section-sub{text-align:center;color:#64748b;font-size:15px;margin-bottom:40px}
+
+/* Feature cards */
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.card{background:#111827;border:1px solid #1e293b;border-radius:16px;padding:28px;transition:border-color .2s}
+.card:hover{border-color:#6366f1}
+.card .card-icon{font-size:32px;margin-bottom:12px;display:block}
+.card h3{font-size:17px;margin-bottom:8px;color:#f1f5f9}
+.card p{font-size:14px;color:#94a3b8}
+
+/* Industries */
+.industries{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.tag{padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;background:#111827;border:1px solid #1e293b;color:#cbd5e1}
+.tag .count{color:#6366f1;font-weight:700}
+
+/* How it works */
+.steps{display:flex;gap:40px;justify-content:center;flex-wrap:wrap}
+.step{flex:1;min-width:200px;max-width:280px;text-align:center}
+.step .step-num{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;font-size:22px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.step h4{font-size:16px;margin-bottom:6px;color:#f1f5f9}
+.step p{font-size:13px;color:#94a3b8}
+
+/* Pricing */
+.pricing{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.price-card{background:#111827;border:1px solid #1e293b;border-radius:16px;padding:32px;text-align:center;position:relative}
+.price-card.pro{border-color:#6366f1;background:linear-gradient(180deg,#1e1b4b 0%,#111827 100%)}
+.price-card .badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#6366f1;color:#fff;padding:4px 16px;border-radius:10px;font-size:12px;font-weight:600}
+.price-card h3{font-size:20px;margin-bottom:16px}
+.price-card .price{font-size:36px;font-weight:800;margin-bottom:4px}
+.price-card .price span{font-size:16px;color:#94a3b8;font-weight:400}
+.price-card .period{font-size:13px;color:#64748b;margin-bottom:20px}
+.price-card ul{list-style:none;text-align:left;margin-bottom:24px}
+.price-card li{padding:6px 0;font-size:14px;color:#94a3b8}
+.price-card li::before{content:"✓ ";color:#34d399;font-weight:700}
+
+/* CTA Bottom */
+.cta-bottom{padding:80px 0;text-align:center}
+.cta-bottom h2{font-size:32px;font-weight:700;margin-bottom:12px}
+.cta-bottom p{color:#64748b;font-size:16px;margin-bottom:32px}
+
+/* Footer */
+footer{padding:40px 0;border-top:1px solid #1e293b;text-align:center;color:#475569;font-size:13px}
+
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+/* Mobile */
+@media(max-width:640px){
+  .hero h1{font-size:28px}
+  .stats{gap:30px}
+  .stat .num{font-size:28px}
+  .section h2{font-size:24px}
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero container">
+  <span class="icon">🛡️</span>
+  <h1>AI内容合规检测</h1>
+  <p class="subtitle">全浏览器通用 · 无需安装<br>覆盖 7 大行业 · 120+ 条规则 · 一键检测</p>
+  <div class="cta-group">
+    <a href="#" class="btn btn-primary">🛡️ 打开 Web 版（免安装）</a>
+    <a href="#features" class="btn btn-outline">了解更多 ↓</a>
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="stats container">
+  <div class="stat"><div class="num">120+</div><div class="label">违禁词规则</div></div>
+  <div class="stat"><div class="num">7</div><div class="label">行业覆盖</div></div>
+  <div class="stat"><div class="num">0秒</div><div class="label">检测耗时</div></div>
+  <div class="stat"><div class="num">免费</div><div class="label">每日3次</div></div>
+</section>
+
+<!-- Industries -->
+<section class="section container" id="features">
+  <h2>覆盖行业</h2>
+  <p class="section-sub">从通用广告法到垂直行业，全方位守护你的内容安全</p>
+  <div class="industries">
+    <span class="tag">⚖️ 通用广告法 <span class="count">35条</span></span>
+    <span class="tag">💄 美妆护肤 <span class="count">26条</span></span>
+    <span class="tag">🍎 食品保健 <span class="count">24条</span></span>
+    <span class="tag">🏥 医疗健康 <span class="count">17条</span></span>
+    <span class="tag">💰 金融理财 <span class="count">17条</span></span>
+    <span class="tag">📚 教育培训 <span class="count">15条</span></span>
+    <span class="tag">📱 直播带货 <span class="count">10条</span></span>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="section container">
+  <h2>为什么选择我们</h2>
+  <p class="section-sub">比传统工具更快、更贴身、更智能</p>
+  <div class="features">
+    <div class="card">
+      <span class="card-icon">⚡</span>
+      <h3>右键即用，不打断工作流</h3>
+      <p>在任何网页选中文本，右键一点即刻检测。不用复制粘贴，不用切换窗口。</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🎯</span>
+      <h3>行业专属规则库</h3>
+      <p>美妆不能写"消炎"、食品不能写"抗癌"、金融不能写"保本"——每个行业独立规则，精准命中。</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">💡</span>
+      <h3>违禁词 + 替换建议</h3>
+      <p>不仅告诉你哪里违规，还给出合规的替换方案。"最好"→"优质"，"根治"→"有效治疗"。</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🔒</span>
+      <h3>隐私安全</h3>
+      <p>检测完全在浏览器本地完成，文案不会上传到任何服务器。你的内容，只有你知道。</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">📊</span>
+      <h3>分级提示</h3>
+      <p>🔴严重违规（绝对禁用）+ 🟡警告提示（建议修改），一目了然，重要程度分得清。</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">⏱️</span>
+      <h3>常用行业一键切换</h3>
+      <p>电商文案、直播脚本、公众号推文、产品详情页——点击弹窗随时切换检测范围。</p>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="section container">
+  <h2>三步上手</h2>
+  <p class="section-sub">打开浏览器就能用，零学习成本</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h4>打开 Web 版</h4>
+      <p>打开网页即用，无需安装任何东西</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h4>选中文本</h4>
+      <p>在任意网页选中你的文案，右键检测</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h4>修改发布</h4>
+      <p>根据替换建议修改违规词，安全发布</p>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="section container">
+  <h2>定价方案</h2>
+  <p class="section-sub">先免费试用，满意再升级</p>
+  <div class="pricing">
+    <div class="price-card">
+      <h3>🆓 免费版</h3>
+      <div class="price">¥0<span>/月</span></div>
+      <div class="period">永久免费</div>
+      <ul>
+        <li>每日 3 次检测</li>
+        <li>通用广告法规则</li>
+        <li>右键 / 弹窗检测</li>
+        <li>网页高亮标注</li>
+      </ul>
+      <a href="#" class="btn btn-outline" style="display:block">打开 Web 版</a>
+    </div>
+    <div class="price-card pro">
+      <div class="badge">🔥 推荐</div>
+      <h3>🚀 Pro 版</h3>
+      <div class="price">¥9.9<span>/月</span></div>
+      <div class="period">首月 1 元体验</div>
+      <ul>
+        <li>无限次检测</li>
+        <li>全部 7 大行业规则</li>
+        <li>AI 深度语义分析（即将推出）</li>
+        <li>图片 OCR 文字检测（即将推出）</li>
+        <li>优先客服支持</li>
+      </ul>
+      <a href="#" class="btn btn-primary" style="display:block">立即升级</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-bottom container">
+  <h2>别再让违禁词毁了你的爆款</h2>
+  <p>每天花 5 秒检测，省下几万块罚款</p>
+  <a href="#" class="btn btn-primary" style="font-size:18px;padding:16px 40px">🛡️ 打开 Web 版（免安装）</a>
+</section>
+
+<footer>
+  <p>© 2025 AI内容合规检测 | 咸鱼翻身出品</p>
+</footer>
+
+</body>
+</html>
